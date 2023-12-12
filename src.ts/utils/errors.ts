@@ -138,12 +138,16 @@ export type ErrorCode =
 
     // Argument Errors
     "INVALID_ARGUMENT" | "MISSING_ARGUMENT" | "UNEXPECTED_ARGUMENT" |
-    "VALUE_MISMATCH" |
+    "VALUE_MISMATCH" | 
 
     // Blockchain Errors
     "CALL_EXCEPTION" | "INSUFFICIENT_FUNDS" | "NONCE_EXPIRED" |
     "REPLACEMENT_UNDERPRICED" | "TRANSACTION_REPLACED" |
-    "UNCONFIGURED_NAME" | "OFFCHAIN_FAULT" |
+    "UNCONFIGURED_NAME" | "OFFCHAIN_FAULT" | 
+    
+    // Blockchain Errors Additional - ADB
+    "HEADER_OR_BLOCK_NOT_FOUND" | "INVALID_BLOCK_RANGE" | "STACK_LIMIT_REACHED" | "METHOD_HANDLER_CRASHED" |
+    "EXECUTION_TIMEOUT" | "NONCE_TOO_LOW" | "FILTER_NOT_FOUND" | "NO_AVAILABLE_UPSTREAM" |
 
     // User Interaction
     "ACTION_REJECTED"
@@ -285,7 +289,6 @@ export interface BadDataError extends EthersError<"BAD_DATA"> {
 export interface CancelledError extends EthersError<"CANCELLED"> {
 }
 
-
 // Operational Errors
 
 /**
@@ -387,8 +390,6 @@ export interface UnexpectedArgumentError extends EthersError<"UNEXPECTED_ARGUMEN
     expectedCount: number;
 }
 
-
-// Blockchain Errors
 
 /**
  *  The action that resulted in the call exception.
@@ -550,6 +551,30 @@ export interface UnconfiguredNameError extends EthersError<"UNCONFIGURED_NAME"> 
     value: string;
 }
 
+export interface HeaderOrBlockNotFoundError extends EthersError<"HEADER_OR_BLOCK_NOT_FOUND"> {
+}
+
+export interface InvalidBlockRangeError extends EthersError<"INVALID_BLOCK_RANGE"> {
+}
+
+export interface StackLimitedReachedError extends EthersError<"STACK_LIMIT_REACHED"> {
+}
+
+export interface MethodHandlerCrashedError extends EthersError<"METHOD_HANDLER_CRASHED"> {
+}
+
+export interface ExecutionTimeoutError extends EthersError<"EXECUTION_TIMEOUT"> {
+}
+
+export interface NonceTooLowError extends EthersError<"NONCE_TOO_LOW"> {
+}
+
+export interface FilterNotFoundError extends EthersError<"FILTER_NOT_FOUND"> {
+}
+
+export interface NoAvailableUpstreamError extends EthersError<"NO_AVAILABLE_UPSTREAM"> {
+}
+
 /**
  *  This Error indicates a request was rejected by the user.
  *
@@ -606,6 +631,16 @@ export type CodedEthersError<T> =
     T extends "REPLACEMENT_UNDERPRICED" ? ReplacementUnderpricedError:
     T extends "TRANSACTION_REPLACED" ? TransactionReplacedError:
     T extends "UNCONFIGURED_NAME" ? UnconfiguredNameError:
+
+    // ADB
+    T extends "HEADER_OR_BLOCK_NOT_FOUND" ? HeaderOrBlockNotFoundError:
+    T extends "INVALID_BLOCK_RANGE" ? InvalidBlockRangeError:
+    T extends "STACK_LIMIT_REACHED" ? StackLimitedReachedError:
+    T extends "METHOD_HANDLER_CRASHED" ? MethodHandlerCrashedError:
+    T extends "EXECUTION_TIMEOUT" ? ExecutionTimeoutError:
+    T extends "NONCE_TOO_LOW" ? NonceTooLowError:
+    T extends "FILTER_NOT_FOUND" ? FilterNotFoundError:
+    T extends "NO_AVAILABLE_UPSTREAM" ? NoAvailableUpstreamError:
 
     T extends "ACTION_REJECTED" ? ActionRejectedError:
 

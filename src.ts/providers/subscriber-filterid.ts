@@ -48,7 +48,7 @@ export class FilterIdSubscriber implements Subscriber {
 
         this.#network = null;
 
-        this.#hault = false;
+        this.#hault = false;       
     }
 
     /**
@@ -74,16 +74,27 @@ export class FilterIdSubscriber implements Subscriber {
 
     async #poll(blockNumber: number): Promise<void> {
         try {
+            console.log(`polling blocknumber ${blockNumber}`)
             // Subscribe if necessary
             if (this.#filterIdPromise == null) {
+                console.log("SUBSCRIBING")
                 this.#filterIdPromise = this._subscribe(this.#provider);
             }
 
             // Get the Filter ID
             let filterId: null | string = null;
             try {
+                console.log("awaiting filter id promise");
                 filterId = await this.#filterIdPromise;
+                console.log(`filter id ${filterId}`);
             } catch (error) {
+                if (isError(error, "FILTER_NOT_FOUND")) {
+                    console.log("Resubscribing - filter id promise failed");
+                    this.#filterIdPromise = null;
+                     this.#provider.once("block", this.#poller);
+                    return;
+                }
+
                 if (!isError(error, "UNSUPPORTED_OPERATION") || error.operation !== "eth_newFilter") {
                     throw error;
                 }
@@ -92,6 +103,7 @@ export class FilterIdSubscriber implements Subscriber {
             // The backend does not support Filter ID; downgrade to
             // polling
             if (filterId == null) {
+                console.log("downgrading to polling");
                 this.#filterIdPromise = null;
                 this.#provider._recoverSubscriber(this, this._recover(this.#provider));
                 return;
@@ -101,14 +113,27 @@ export class FilterIdSubscriber implements Subscriber {
             if (!this.#network) { this.#network = network; }
 
             if ((this.#network as Network).chainId !== network.chainId) {
-                throw new Error("chaid changed");
+                throw new Error("chainid changed");
             }
 
-            if (this.#hault) { return; }
+            if (this.#hault) { console.log("haulting"); return; }
 
-            const result = await this.#provider.send("eth_getFilterChanges", [ filterId ]);
-            await this._emitResults(this.#provider, result);
-        } catch (error) { console.log("@TODO", error); }
+            console.log("awaiting getFilterChanges");
+            try{
+                const result = await this.#provider.send("eth_getFilterChanges", [ filterId ]);
+                await this._emitResults(this.#provider, result);
+            } catch(error) {
+                if (isError(error, "FILTER_NOT_FOUND")) {
+                    console.log("Resubscribing - get filter changes invalidated");
+                    this.#filterIdPromise = null;
+                    this.#provider.once("block", this.#poller);
+                    return;
+                } else {
+                    throw error;
+                }
+            }
+        } catch (error) { console.log("@TODO", error);}
+        console.log();
 
         this.#provider.once("block", this.#poller);
     }
@@ -186,6 +211,11 @@ export class FilterIdEventSubscriber extends FilterIdSubscriber {
  *  @_docloc: api/providers/abstract-provider
  */
 export class FilterIdPendingSubscriber extends FilterIdSubscriber {
+    constructor(provider: JsonRpcApiProvider) {
+        super(provider);
+    }
+
+
     async _subscribe(provider: JsonRpcApiProvider): Promise<string> {
         return await provider.send("eth_newPendingTransactionFilter", [ ]);
     }

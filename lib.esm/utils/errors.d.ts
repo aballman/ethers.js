@@ -77,7 +77,7 @@ export type ErrorInfo<T> = Omit<T, "code" | "name" | "message" | "shortMessage">
  *
  *  **``"ACTION_REJECTED"``** - see [[ActionRejectedError]]
  */
-export type ErrorCode = "UNKNOWN_ERROR" | "NOT_IMPLEMENTED" | "UNSUPPORTED_OPERATION" | "NETWORK_ERROR" | "SERVER_ERROR" | "TIMEOUT" | "BAD_DATA" | "CANCELLED" | "BUFFER_OVERRUN" | "NUMERIC_FAULT" | "INVALID_ARGUMENT" | "MISSING_ARGUMENT" | "UNEXPECTED_ARGUMENT" | "VALUE_MISMATCH" | "CALL_EXCEPTION" | "INSUFFICIENT_FUNDS" | "NONCE_EXPIRED" | "REPLACEMENT_UNDERPRICED" | "TRANSACTION_REPLACED" | "UNCONFIGURED_NAME" | "OFFCHAIN_FAULT" | "ACTION_REJECTED";
+export type ErrorCode = "UNKNOWN_ERROR" | "NOT_IMPLEMENTED" | "UNSUPPORTED_OPERATION" | "NETWORK_ERROR" | "SERVER_ERROR" | "TIMEOUT" | "BAD_DATA" | "CANCELLED" | "BUFFER_OVERRUN" | "NUMERIC_FAULT" | "INVALID_ARGUMENT" | "MISSING_ARGUMENT" | "UNEXPECTED_ARGUMENT" | "VALUE_MISMATCH" | "CALL_EXCEPTION" | "INSUFFICIENT_FUNDS" | "NONCE_EXPIRED" | "REPLACEMENT_UNDERPRICED" | "TRANSACTION_REPLACED" | "UNCONFIGURED_NAME" | "OFFCHAIN_FAULT" | "HEADER_OR_BLOCK_NOT_FOUND" | "INVALID_BLOCK_RANGE" | "STACK_LIMIT_REACHED" | "METHOD_HANDLER_CRASHED" | "EXECUTION_TIMEOUT" | "NONCE_TOO_LOW" | "FILTER_NOT_FOUND" | "NO_AVAILABLE_UPSTREAM" | "ACTION_REJECTED";
 /**
  *  All errors in Ethers include properties to assist in
  *  machine-readable errors.
@@ -418,6 +418,22 @@ export interface UnconfiguredNameError extends EthersError<"UNCONFIGURED_NAME"> 
      */
     value: string;
 }
+export interface HeaderOrBlockNotFoundError extends EthersError<"HEADER_OR_BLOCK_NOT_FOUND"> {
+}
+export interface InvalidBlockRangeError extends EthersError<"INVALID_BLOCK_RANGE"> {
+}
+export interface StackLimitedReachedError extends EthersError<"STACK_LIMIT_REACHED"> {
+}
+export interface MethodHandlerCrashedError extends EthersError<"METHOD_HANDLER_CRASHED"> {
+}
+export interface ExecutionTimeoutError extends EthersError<"EXECUTION_TIMEOUT"> {
+}
+export interface NonceTooLowError extends EthersError<"NONCE_TOO_LOW"> {
+}
+export interface FilterNotFoundError extends EthersError<"FILTER_NOT_FOUND"> {
+}
+export interface NoAvailableUpstreamError extends EthersError<"NO_AVAILABLE_UPSTREAM"> {
+}
 /**
  *  This Error indicates a request was rejected by the user.
  *
@@ -446,7 +462,7 @@ export interface ActionRejectedError extends EthersError<"ACTION_REJECTED"> {
  *
  *  @flatworm-skip-docs
  */
-export type CodedEthersError<T> = T extends "UNKNOWN_ERROR" ? UnknownError : T extends "NOT_IMPLEMENTED" ? NotImplementedError : T extends "UNSUPPORTED_OPERATION" ? UnsupportedOperationError : T extends "NETWORK_ERROR" ? NetworkError : T extends "SERVER_ERROR" ? ServerError : T extends "TIMEOUT" ? TimeoutError : T extends "BAD_DATA" ? BadDataError : T extends "CANCELLED" ? CancelledError : T extends "BUFFER_OVERRUN" ? BufferOverrunError : T extends "NUMERIC_FAULT" ? NumericFaultError : T extends "INVALID_ARGUMENT" ? InvalidArgumentError : T extends "MISSING_ARGUMENT" ? MissingArgumentError : T extends "UNEXPECTED_ARGUMENT" ? UnexpectedArgumentError : T extends "CALL_EXCEPTION" ? CallExceptionError : T extends "INSUFFICIENT_FUNDS" ? InsufficientFundsError : T extends "NONCE_EXPIRED" ? NonceExpiredError : T extends "OFFCHAIN_FAULT" ? OffchainFaultError : T extends "REPLACEMENT_UNDERPRICED" ? ReplacementUnderpricedError : T extends "TRANSACTION_REPLACED" ? TransactionReplacedError : T extends "UNCONFIGURED_NAME" ? UnconfiguredNameError : T extends "ACTION_REJECTED" ? ActionRejectedError : never;
+export type CodedEthersError<T> = T extends "UNKNOWN_ERROR" ? UnknownError : T extends "NOT_IMPLEMENTED" ? NotImplementedError : T extends "UNSUPPORTED_OPERATION" ? UnsupportedOperationError : T extends "NETWORK_ERROR" ? NetworkError : T extends "SERVER_ERROR" ? ServerError : T extends "TIMEOUT" ? TimeoutError : T extends "BAD_DATA" ? BadDataError : T extends "CANCELLED" ? CancelledError : T extends "BUFFER_OVERRUN" ? BufferOverrunError : T extends "NUMERIC_FAULT" ? NumericFaultError : T extends "INVALID_ARGUMENT" ? InvalidArgumentError : T extends "MISSING_ARGUMENT" ? MissingArgumentError : T extends "UNEXPECTED_ARGUMENT" ? UnexpectedArgumentError : T extends "CALL_EXCEPTION" ? CallExceptionError : T extends "INSUFFICIENT_FUNDS" ? InsufficientFundsError : T extends "NONCE_EXPIRED" ? NonceExpiredError : T extends "OFFCHAIN_FAULT" ? OffchainFaultError : T extends "REPLACEMENT_UNDERPRICED" ? ReplacementUnderpricedError : T extends "TRANSACTION_REPLACED" ? TransactionReplacedError : T extends "UNCONFIGURED_NAME" ? UnconfiguredNameError : T extends "HEADER_OR_BLOCK_NOT_FOUND" ? HeaderOrBlockNotFoundError : T extends "INVALID_BLOCK_RANGE" ? InvalidBlockRangeError : T extends "STACK_LIMIT_REACHED" ? StackLimitedReachedError : T extends "METHOD_HANDLER_CRASHED" ? MethodHandlerCrashedError : T extends "EXECUTION_TIMEOUT" ? ExecutionTimeoutError : T extends "NONCE_TOO_LOW" ? NonceTooLowError : T extends "FILTER_NOT_FOUND" ? FilterNotFoundError : T extends "NO_AVAILABLE_UPSTREAM" ? NoAvailableUpstreamError : T extends "ACTION_REJECTED" ? ActionRejectedError : never;
 /**
  *  Returns true if the %%error%% matches an error thrown by ethers
  *  that matches the error %%code%%.

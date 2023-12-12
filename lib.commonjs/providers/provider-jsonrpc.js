@@ -708,6 +708,52 @@ class JsonRpcApiProvider extends abstract_provider_js_1.AbstractProvider {
                 });
             }
         }
+        // ADB Addition
+        console.log("ADB", error.code, message);
+        if (error.code === -32000) {
+            if (message.match(/header not found or could not find block|header not found|could not find block/i)) {
+                return (0, index_js_5.makeError)("block doesn't exist or the node you're hitting is not in sync", "HEADER_OR_BLOCK_NOT_FOUND", {
+                    info: { error, payload }
+                });
+            }
+            else if (message.match(/invalid block range params/i)) {
+                return (0, index_js_5.makeError)("invalid block range", "INVALID_BLOCK_RANGE", {
+                    info: { error, payload }
+                });
+            }
+            else if (message.match(/stack limit reached/i)) {
+                return (0, index_js_5.makeError)("smart contract error/bug", "STACK_LIMIT_REACHED", {
+                    info: { error, payload }
+                });
+            }
+            else if (message.match(/method handler crashed/i)) {
+                return (0, index_js_5.makeError)("internal error from the blockchain client", "METHOD_HANDLER_CRASHED", {
+                    info: { error, payload }
+                });
+            }
+            else if (message.match(/execution timeout/i)) {
+                return (0, index_js_5.makeError)("execution timeout", "EXECUTION_TIMEOUT", {
+                    info: { error, payload }
+                });
+            }
+            else if (message.match(/nonce too low/i)) {
+                return (0, index_js_5.makeError)("nonce specified in your xaction is lower than the net valid nonce for the sender", "NONCE_TOO_LOW", {
+                    info: { error, payload }
+                });
+            }
+            else if (message.match(/filter not found/i)) {
+                return (0, index_js_5.makeError)("filter not found or exceeded timeout", "FILTER_NOT_FOUND", {
+                    info: { error, payload }
+                });
+            }
+        }
+        else if (error.code === -32002) {
+            if (message.match(/no response or no available upstream/i)) {
+                return (0, index_js_5.makeError)("no available upstream or no response", "NO_AVAILABLE_UPSTREAM", {
+                    info: { error, payload }
+                });
+            }
+        }
         let unsupported = !!message.match(/the method .* does not exist/i);
         if (!unsupported) {
             if (error && error.details && error.details.startsWith("Unauthorized method:")) {

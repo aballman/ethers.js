@@ -58,6 +58,7 @@ export declare class FilterIdEventSubscriber extends FilterIdSubscriber {
  *  @_docloc: api/providers/abstract-provider
  */
 export declare class FilterIdPendingSubscriber extends FilterIdSubscriber {
+    constructor(provider: JsonRpcApiProvider);
     _subscribe(provider: JsonRpcApiProvider): Promise<string>;
     _emitResults(provider: JsonRpcApiProvider, results: Array<any>): Promise<void>;
 }
