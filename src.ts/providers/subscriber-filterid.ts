@@ -74,7 +74,7 @@ export class FilterIdSubscriber implements Subscriber {
 
     async #poll(blockNumber: number): Promise<void> {
         try {
-            console.log(`polling blocknumber ${blockNumber}`)
+            // console.log(`polling blocknumber ${blockNumber}`)
             // Subscribe if necessary
             if (this.#filterIdPromise == null) {
                 console.log("SUBSCRIBING")
@@ -84,14 +84,13 @@ export class FilterIdSubscriber implements Subscriber {
             // Get the Filter ID
             let filterId: null | string = null;
             try {
-                console.log("awaiting filter id promise");
                 filterId = await this.#filterIdPromise;
                 console.log(`filter id ${filterId}`);
             } catch (error) {
                 if (isError(error, "FILTER_NOT_FOUND")) {
                     console.log("Resubscribing - filter id promise failed");
                     this.#filterIdPromise = null;
-                     this.#provider.once("block", this.#poller);
+                    this.#provider.once("block", this.#poller);
                     return;
                 }
 
@@ -118,7 +117,6 @@ export class FilterIdSubscriber implements Subscriber {
 
             if (this.#hault) { console.log("haulting"); return; }
 
-            console.log("awaiting getFilterChanges");
             try{
                 const result = await this.#provider.send("eth_getFilterChanges", [ filterId ]);
                 await this._emitResults(this.#provider, result);
@@ -128,9 +126,9 @@ export class FilterIdSubscriber implements Subscriber {
                     this.#filterIdPromise = null;
                     this.#provider.once("block", this.#poller);
                     return;
-                } else {
-                    throw error;
                 }
+
+                throw error;
             }
         } catch (error) { console.log("@TODO", error);}
         console.log();

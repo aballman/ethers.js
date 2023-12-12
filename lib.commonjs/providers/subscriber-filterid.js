@@ -56,7 +56,7 @@ class FilterIdSubscriber {
     }
     async #poll(blockNumber) {
         try {
-            console.log(`polling blocknumber ${blockNumber}`);
+            // console.log(`polling blocknumber ${blockNumber}`)
             // Subscribe if necessary
             if (this.#filterIdPromise == null) {
                 console.log("SUBSCRIBING");
@@ -65,7 +65,6 @@ class FilterIdSubscriber {
             // Get the Filter ID
             let filterId = null;
             try {
-                console.log("awaiting filter id promise");
                 filterId = await this.#filterIdPromise;
                 console.log(`filter id ${filterId}`);
             }
@@ -99,7 +98,6 @@ class FilterIdSubscriber {
                 console.log("haulting");
                 return;
             }
-            console.log("awaiting getFilterChanges");
             try {
                 const result = await this.#provider.send("eth_getFilterChanges", [filterId]);
                 await this._emitResults(this.#provider, result);
@@ -111,9 +109,7 @@ class FilterIdSubscriber {
                     this.#provider.once("block", this.#poller);
                     return;
                 }
-                else {
-                    throw error;
-                }
+                throw error;
             }
         }
         catch (error) {
