@@ -59,18 +59,16 @@ class FilterIdSubscriber {
             // console.log(`polling blocknumber ${blockNumber}`)
             // Subscribe if necessary
             if (this.#filterIdPromise == null) {
-                console.log("SUBSCRIBING");
                 this.#filterIdPromise = this._subscribe(this.#provider);
             }
             // Get the Filter ID
             let filterId = null;
             try {
                 filterId = await this.#filterIdPromise;
-                console.log(`filter id ${filterId}`);
             }
             catch (error) {
                 if ((0, index_js_1.isError)(error, "FILTER_NOT_FOUND")) {
-                    console.log("Resubscribing - filter id promise failed");
+                    console.error(error);
                     this.#filterIdPromise = null;
                     this.#provider.once("block", this.#poller);
                     return;
@@ -82,7 +80,7 @@ class FilterIdSubscriber {
             // The backend does not support Filter ID; downgrade to
             // polling
             if (filterId == null) {
-                console.log("downgrading to polling");
+                console.log("subscription downgrading to polling");
                 this.#filterIdPromise = null;
                 this.#provider._recoverSubscriber(this, this._recover(this.#provider));
                 return;
@@ -95,7 +93,6 @@ class FilterIdSubscriber {
                 throw new Error("chainid changed");
             }
             if (this.#hault) {
-                console.log("haulting");
                 return;
             }
             try {
@@ -104,7 +101,7 @@ class FilterIdSubscriber {
             }
             catch (error) {
                 if ((0, index_js_1.isError)(error, "FILTER_NOT_FOUND")) {
-                    console.log("Resubscribing - get filter changes invalidated");
+                    console.error(error);
                     this.#filterIdPromise = null;
                     this.#provider.once("block", this.#poller);
                     return;
@@ -115,7 +112,6 @@ class FilterIdSubscriber {
         catch (error) {
             console.log("@TODO", error);
         }
-        console.log();
         this.#provider.once("block", this.#poller);
     }
     #teardown() {

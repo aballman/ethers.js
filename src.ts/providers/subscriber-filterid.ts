@@ -77,7 +77,6 @@ export class FilterIdSubscriber implements Subscriber {
             // console.log(`polling blocknumber ${blockNumber}`)
             // Subscribe if necessary
             if (this.#filterIdPromise == null) {
-                console.log("SUBSCRIBING")
                 this.#filterIdPromise = this._subscribe(this.#provider);
             }
 
@@ -85,10 +84,9 @@ export class FilterIdSubscriber implements Subscriber {
             let filterId: null | string = null;
             try {
                 filterId = await this.#filterIdPromise;
-                console.log(`filter id ${filterId}`);
             } catch (error) {
                 if (isError(error, "FILTER_NOT_FOUND")) {
-                    console.log("Resubscribing - filter id promise failed");
+                    console.error(error);
                     this.#filterIdPromise = null;
                     this.#provider.once("block", this.#poller);
                     return;
@@ -102,7 +100,7 @@ export class FilterIdSubscriber implements Subscriber {
             // The backend does not support Filter ID; downgrade to
             // polling
             if (filterId == null) {
-                console.log("downgrading to polling");
+                console.log("subscription downgrading to polling");
                 this.#filterIdPromise = null;
                 this.#provider._recoverSubscriber(this, this._recover(this.#provider));
                 return;
@@ -115,14 +113,14 @@ export class FilterIdSubscriber implements Subscriber {
                 throw new Error("chainid changed");
             }
 
-            if (this.#hault) { console.log("haulting"); return; }
+            if (this.#hault) { return; }
 
             try{
                 const result = await this.#provider.send("eth_getFilterChanges", [ filterId ]);
                 await this._emitResults(this.#provider, result);
             } catch(error) {
                 if (isError(error, "FILTER_NOT_FOUND")) {
-                    console.log("Resubscribing - get filter changes invalidated");
+                    console.error(error);
                     this.#filterIdPromise = null;
                     this.#provider.once("block", this.#poller);
                     return;
@@ -131,7 +129,6 @@ export class FilterIdSubscriber implements Subscriber {
                 throw error;
             }
         } catch (error) { console.log("@TODO", error);}
-        console.log();
 
         this.#provider.once("block", this.#poller);
     }
